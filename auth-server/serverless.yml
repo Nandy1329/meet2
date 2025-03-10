@@ -6,9 +6,10 @@ provider:
   region: us-west-2
   timeout: 30
   environment:
-  CLIENT_ID: ${file(config.json):CLIENT_ID}
+    CLIENT_ID: ${file(config.json):CLIENT_ID}
     CLIENT_SECRET: ${file(config.json):CLIENT_SECRET}
     CALENDAR_ID: ${file(config.json):CALENDAR_ID}
+
 functions:
   getAuthURL:
     handler: handler.getAuthURL
@@ -22,3 +23,7 @@ functions:
       - http:
           path: api/token/{code}
           method: get
+
+# Disable Serverless Dashboard
+org: null
+app: null

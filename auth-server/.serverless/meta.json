@@ -29,7 +29,9 @@
           ]
         },
         "getAccessToken": "<REDACTED>"
-      }
+      },
+      "org": null,
+      "app": null
     },
     "provider": {
       "name": "aws",
@@ -44,15 +46,14 @@
     },
     "error": {
       "message": "You are not a member of any Serverless Framework Orgs. Please login to the Serverless Dashboard to create an Org, or have support help you create an Org.",
-      "stack": "Error: You are not a member of any Serverless Framework Orgs. Please login to the Serverless Dashboard to create an Org, or have support help you create an Org.\n    at Authentication.getAuthenticatedData (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1159:2367)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Authentication.authenticate (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1159:21826)\n    at async TraditionalRunner.resolveVariablesAndAuthenticate (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1177:2379)\n    at async TraditionalRunner.run (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1463:27948)\n    at async route (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1509:2779)\n    at async Object.run (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1510:3668)\n    at async run2 (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1510:4821)"
+      "stack": "Error: You are not a member of any Serverless Framework Orgs. Please login to the Serverless Dashboard to create an Org, or have support help you create an Org.\n    at Authentication.authenticateInteractive (C:\\Users\\nicki\\.serverless\\releases\\4.7.0\\sf-core\\src\\lib\\auth\\index.js:855:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Authentication.getAuthenticatedData (C:\\Users\\nicki\\.serverless\\releases\\4.7.0\\sf-core\\src\\lib\\auth\\index.js:155:7)\n    at async Authentication.authenticate (C:\\Users\\nicki\\.serverless\\releases\\4.7.0\\sf-core\\src\\lib\\auth\\index.js:1286:12)\n    at async TraditionalRunner.resolveVariablesAndAuthenticate (C:\\Users\\nicki\\.serverless\\releases\\4.7.0\\sf-core\\src\\lib\\runners\\index.js:272:30)\n    at async TraditionalRunner.run (C:\\Users\\nicki\\.serverless\\releases\\4.7.0\\sf-core\\src\\lib\\runners\\framework.js:78:31)\n    at async route (C:\\Users\\nicki\\.serverless\\releases\\4.7.0\\sf-core\\src\\lib\\router.js:102:20)\n    at async Object.run (C:\\Users\\nicki\\.serverless\\releases\\4.7.0\\sf-core\\src\\index.js:39:3)\n    at async run2 (C:\\Users\\nicki\\.serverless\\releases\\4.7.0\\sf-core\\bin\\sf-core.js:31:3)"
     },
-    "serviceRawFile": "service: auth-server\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  region: us-west-2\r\n  timeout: 30\r\n  environment:\r\n    CLIENT_ID: ${file(config.json):CLIENT_ID}\r\n    CLIENT_SECRET: ${file(config.json):CLIENT_SECRET}\r\n    CALENDAR_ID: ${file(config.json):CALENDAR_ID}\r\n\r\nfunctions:\r\n  getAuthURL:\r\n    handler: handler.getAuthURL\r\n    events:\r\n      - http:\r\n          path: api/get-auth-url\r\n          method: get\r\n  getAccessToken:\r\n    handler: handler.getAccessToken\r\n    events:\r\n      - http:\r\n          path: api/token/{code}\r\n          method: get\r\n",
+    "serviceRawFile": "service: auth-server\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  region: us-west-2\r\n  timeout: 30\r\n  environment:\r\n    CLIENT_ID: ${file(config.json):CLIENT_ID}\r\n    CLIENT_SECRET: ${file(config.json):CLIENT_SECRET}\r\n    CALENDAR_ID: ${file(config.json):CALENDAR_ID}\r\n\r\nfunctions:\r\n  getAuthURL:\r\n    handler: handler.getAuthURL\r\n    events:\r\n      - http:\r\n          path: api/get-auth-url\r\n          method: get\r\n  getAccessToken:\r\n    handler: handler.getAccessToken\r\n    events:\r\n      - http:\r\n          path: api/token/{code}\r\n          method: get\r\n\r\n# Disable Serverless Dashboard\r\norg: null\r\napp: null\r\n",
     "command": [
-      "invoke",
-      "local"
+      "deploy"
     ],
     "options": {
-      "function": "getAuthURL"
+      "debug": "*"
     },
     "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-west-2:051826701012:stack/my-auth-service-dev/77a48720-8b15-11ef-98e1-02b6a29945ff",
     "serviceProviderAwsCfStackCreated": "2024-10-15T16:49:39.296Z",
