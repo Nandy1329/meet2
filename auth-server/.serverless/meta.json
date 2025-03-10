@@ -1,23 +1,20 @@
 {
   "C:\\Users\\nicki\\meet2\\auth-server\\serverless.yml": {
-    "versionFramework": "4.6.2",
+    "versionFramework": "4.7.0",
     "servicePath": "C:\\Users\\nicki\\meet2\\auth-server\\serverless.yml",
     "serviceConfigFileName": "serverless.yml",
     "service": {
-      "service": "my-auth-service",
+      "service": "auth-server",
       "provider": {
         "name": "aws",
         "runtime": "nodejs20.x",
         "region": "us-west-2",
         "timeout": 30,
         "environment": {
-          "CLIENT_ID": "YOUR_CLIENT_ID",
+          "CLIENT_ID": "${file(config.json):CLIENT_ID}",
           "CLIENT_SECRET": "<REDACTED>",
-          "CALENDAR_ID": "fullstackwebdev@careerfoundry.com",
-          "IS_LOCAL": "true"
-        },
-        "stage": "dev",
-        "versionFunctions": true
+          "CALENDAR_ID": "${file(config.json):CALENDAR_ID}"
+        }
       },
       "functions": {
         "getAuthURL": {
@@ -26,13 +23,12 @@
             {
               "http": {
                 "path": "api/get-auth-url",
-                "method": "get",
-                "cors": true
+                "method": "get"
               }
             }
-          ],
-          "name": "my-auth-service-dev-getAuthURL"
-        }
+          ]
+        },
+        "getAccessToken": "<REDACTED>"
       }
     },
     "provider": {
@@ -41,24 +37,16 @@
       "region": "us-west-2",
       "timeout": 30,
       "environment": {
-        "CLIENT_ID": "YOUR_CLIENT_ID",
+        "CLIENT_ID": "${file(config.json):CLIENT_ID}",
         "CLIENT_SECRET": "<REDACTED>",
-        "CALENDAR_ID": "fullstackwebdev@careerfoundry.com",
-        "IS_LOCAL": "true"
-      },
-      "stage": "dev",
-      "versionFunctions": true
+        "CALENDAR_ID": "${file(config.json):CALENDAR_ID}"
+      }
     },
-    "dashboard": {
-      "isEnabledForService": false,
-      "requiredAuthentication": false,
-      "orgFeaturesInUse": null,
-      "orgObservabilityIntegrations": null,
-      "serviceAppId": null,
-      "serviceProvider": null,
-      "instanceParameters": null
+    "error": {
+      "message": "You are not a member of any Serverless Framework Orgs. Please login to the Serverless Dashboard to create an Org, or have support help you create an Org.",
+      "stack": "Error: You are not a member of any Serverless Framework Orgs. Please login to the Serverless Dashboard to create an Org, or have support help you create an Org.\n    at Authentication.getAuthenticatedData (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1159:2367)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Authentication.authenticate (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1159:21826)\n    at async TraditionalRunner.resolveVariablesAndAuthenticate (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1177:2379)\n    at async TraditionalRunner.run (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1463:27948)\n    at async route (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1509:2779)\n    at async Object.run (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1510:3668)\n    at async run2 (file:///C:/Users/nicki/.serverless/releases/4.7.0/package/dist/sf-core.js:1510:4821)"
     },
-    "serviceRawFile": "service: my-auth-service\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  region: us-west-2\r\n  timeout: 30\r\n  environment:\r\n    CLIENT_ID: ${file(config.json):CLIENT_ID}\r\n    CLIENT_SECRET: ${file(config.json):CLIENT_SECRET}\r\n    CALENDAR_ID: ${file(config.json):CALENDAR_ID}\r\n\r\nfunctions:\r\n  getAuthURL:\r\n    handler: handler.getAuthURL\r\n    events:\r\n      - http:\r\n          path: api/get-auth-url\r\n          method: get\r\n          cors: true",
+    "serviceRawFile": "service: auth-server\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  region: us-west-2\r\n  timeout: 30\r\n  environment:\r\n    CLIENT_ID: ${file(config.json):CLIENT_ID}\r\n    CLIENT_SECRET: ${file(config.json):CLIENT_SECRET}\r\n    CALENDAR_ID: ${file(config.json):CALENDAR_ID}\r\n\r\nfunctions:\r\n  getAuthURL:\r\n    handler: handler.getAuthURL\r\n    events:\r\n      - http:\r\n          path: api/get-auth-url\r\n          method: get\r\n  getAccessToken:\r\n    handler: handler.getAccessToken\r\n    events:\r\n      - http:\r\n          path: api/token/{code}\r\n          method: get\r\n",
     "command": [
       "invoke",
       "local"
@@ -66,12 +54,6 @@
     "options": {
       "function": "getAuthURL"
     },
-    "orgId": "34f4666c-1e2c-404b-ad61-b176e3ac80fa",
-    "orgName": "nandersen",
-    "userId": "46pMZykgKWvY9vVqVL",
-    "userName": "nandersen",
-    "serviceProviderAwsAccountId": "051826701012",
-    "serviceProviderAwsCfStackName": "my-auth-service-dev",
     "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-west-2:051826701012:stack/my-auth-service-dev/77a48720-8b15-11ef-98e1-02b6a29945ff",
     "serviceProviderAwsCfStackCreated": "2024-10-15T16:49:39.296Z",
     "serviceProviderAwsCfStackUpdated": "2024-10-28T20:25:17.037Z",
