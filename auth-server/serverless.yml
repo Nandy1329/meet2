@@ -23,7 +23,3 @@ functions:
       - http:
           path: api/token/{code}
           method: get
-
-# Disable Serverless Dashboard
-org: null
-app: null
