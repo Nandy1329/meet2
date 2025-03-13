@@ -5,11 +5,8 @@
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-
     <title>Test Auth Server</title>
 </head>
-
 
 <body>
     <style>
@@ -21,9 +18,6 @@
             margin-top: 25px;
         }
     </style>
-
-
-
 
     <main id="container">
         <h1>OAuth2 Test</h1>
@@ -39,8 +33,7 @@
         const resultElement = document.getElementById("result");
         const resultLink = document.getElementById("authURL");
         // Replace this with your own endpoint
-        const getAuthURL = "YOUR_LAMBDA_GET_AUTH_URL_ENDPOINT";
-
+        const getAuthURL = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-auth-url";
 
         getAuthUrlButton.onclick = function () {
             fetch(getAuthURL)
