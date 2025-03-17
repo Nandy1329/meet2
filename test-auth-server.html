@@ -21,125 +21,103 @@
 
     <main id="container">
         <h1>OAuth2 Test</h1>
+
         <h4><b>Step 1:</b> Get the OAuth URL</h4>
         <p>Click the button below to get your OAuth URL.</p>
         <button id="getAuthUrlButton">Get OAuth URL</button>
         <p id="result"></p>
         <a id="authURL" href="#" target="_blank">Click to authorize</a>
 
-        <!-- Step 2 -->
-        <h4>Step 2: Get your code and exchange for an access token</h4>
-        <p>After you're redirected back, copy the code from the URI.</p>
-        <label>Code input:
+        <h4><b>Step 2:</b> Get your code and exchange for an access token</h4>
+        <p>After you’re redirected back to your Meet app on GitHub, copy the code from the URL.</p>
+        <label>
+            Code input
             <input id="code" type="text" value="" />
         </label>
         <button id="getToken">Get Token</button>
         <p id="accessToken"></p>
 
-        <!-- Step 3 -->
-        <h4>Step 3: Get Calendar Events</h4>
-        <p>Click the button below to fetch your calendar events:</p>
-        <button id="getEvents">Get Calendar Events</button>
-        <pre id="events"></pre> <!-- This is where the events will be displayed -->
+        <h4><b>Step 3:</b> Get the calendar events using your access token</h4>
+        <button id="getEvents">Get Events</button>
+        <p id="events"></p>
     </main>
 
     <script type="text/javascript">
-        // --------------------- STEP 1
         const getAuthUrlButton = document.getElementById("getAuthUrlButton");
         const resultElement = document.getElementById("result");
         const resultLink = document.getElementById("authURL");
-        const getAuthURL =
-            "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-auth-url";
+
+        const getAuthURL = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-auth-url";
 
         getAuthUrlButton.onclick = function () {
             fetch(getAuthURL)
                 .then(response => response.json())
                 .then(json => {
                     const { authUrl } = json;
-                    resultElement.innerText = authUrl; // Display the auth URL for debugging
-                    resultLink.href = authUrl; // Set the link for authorization
+                    resultElement.innerHTML = "OAuth URL retrieved successfully!<br>";
+                    resultLink.href = authUrl;
+                    resultLink.innerText = authUrl;
                 })
                 .catch(error => {
-                    console.error('Error fetching auth URL:', error);
-                    resultElement.innerText = 'Error fetching auth URL.';
+                    resultElement.innerText = "Error fetching OAuth URL: " + error;
                 });
         };
-        // --------------------- END OF STEP 1
 
-        // --------------------- STEP 2
         const codeValue = document.getElementById("code");
         const getAccessToken = document.getElementById("getToken");
         const accessTokenElement = document.getElementById("accessToken");
 
         getAccessToken.onclick = function () {
-            let code = codeValue.value.trim(); // Get the code from input
-
+            let code = codeValue.value.trim();
             if (!code) {
-                accessTokenElement.innerText = 'Please provide a valid code.';
+                accessTokenElement.innerText = "Error: Code is required!";
                 return;
             }
-
-            // URL-encode the authorization code
             code = encodeURIComponent(code);
+            const getTokenURL = `https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/token/${code}`;
 
-            // Fix: Use backticks for template literals
-            const getTokenRequest = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/token/${code}";
-
-            console.log('Requesting token with code:', code);
-
-            fetch(getTokenRequest)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error fetching access token: ' + response.statusText);
-                    }
-                    return response.json();
-                })
+            fetch(getTokenURL)
+                .then(response => response.json())
                 .then(json => {
-                    console.log('Token response:', json);
-                    accessTokenElement.innerText = JSON.stringify(json, null, 2);
+                    console.log("Token JSON response:", json);
+                    if (json && json.access_token) {
+                        accessTokenElement.innerText = JSON.stringify(json);
+                    } else {
+                        accessTokenElement.innerText = "Error: Token not found in response.";
+                    }
                 })
                 .catch(error => {
-                    console.error('Error fetching access token:', error);
-                    accessTokenElement.innerText = 'Error fetching access token.';
+                    accessTokenElement.innerText = "Error fetching access token: " + error;
                 });
         };
-        // --------------------- END OF STEP 2
 
-        // --------------------- STEP 3
-        const getEvents = document.getElementById("getEvents");
-        const events = document.getElementById("events");
-        const getCalendarEvents = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-calendar-events/{access_token}";
+        const getEventsButton = document.getElementById("getEvents");
+        const eventsElement = document.getElementById("events");
+        const getCalendarEventsURL = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-calendar-events";
 
-        getEvents.onclick = function () {
+        getEventsButton.onclick = function () {
             try {
-                // Parse the access token from the text element
-                const { access_token } = JSON.parse(accessTokenElement.innerText);
+                const accessTokenData = JSON.parse(accessTokenElement.innerText);
+                const access_token = accessTokenData.access_token;
 
-                // Construct the event request URL with the access token
-                const eventRequest = `${getCalendarEvents}/${encodeURIComponent(access_token)}`;
+                if (!access_token) {
+                    eventsElement.innerText = "Error: Access token is missing.";
+                    return;
+                }
 
-                // Fetch calendar events from the API
+                const eventRequest = `${getCalendarEventsURL}/${access_token}`;
                 fetch(eventRequest)
-                    .then(function (response) {
-                        if (!response.ok) {
-                            throw new Error("Error fetching calendar events: " + response.statusText);
-                        }
-                        return response.json();
+                    .then(response => response.json())
+                    .then(json => {
+                        eventsElement.innerText = JSON.stringify(json, null, 2);
                     })
-                    .then(function (json) {
-                        // Display the events in the 'events' element
-                        events.innerText = JSON.stringify(json, null, 2);
-                    })
-                    .catch(function (error) {
-                        console.error("Error fetching calendar events:", error);
-                        events.innerText = "Failed to load events.";
+                    .catch(error => {
+                        eventsElement.innerText = "Error fetching events: " + error;
                     });
-            } catch (error) {
-                console.error("Error parsing access token:", error);
-                events.innerText = "Invalid access token.";
+            } catch (e) {
+                eventsElement.innerText = "Error: Unable to parse access token.";
             }
         };
-        // -- END OF STEP 3
     </script>
 </body>
 
