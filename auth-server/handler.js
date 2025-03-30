@@ -69,26 +69,16 @@ module.exports.getAccessToken = async (event) => {
   }
 };
 
-module.exports.getCalendarEvents = async (event) => {
+mmodule.exports.getCalendarEvents = async (event) => {
   try {
-    let access_token = event.pathParameters?.access_token;
+    const authHeader = event.headers?.Authorization || event.headers?.authorization;
 
-    if (!access_token) {
-      throw new Error("Access token is missing.");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new Error("Missing or invalid Authorization header");
     }
 
-    if (access_token.includes("%")) {
-      access_token = decodeURIComponent(access_token);
-    }
-
+    const access_token = authHeader.split(" ")[1];
     oAuth2Client.setCredentials({ access_token });
-
-    // Auto-refresh expired tokens
-    if (oAuth2Client.isTokenExpiring()) {
-      const refreshedTokens = await oAuth2Client.refreshAccessToken();
-      access_token = refreshedTokens.credentials.access_token;
-      console.log("Token refreshed successfully.");
-    }
 
     const results = await calendar.events.list({
       calendarId: CALENDAR_ID,
@@ -101,8 +91,8 @@ module.exports.getCalendarEvents = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true
       },
       body: JSON.stringify({ events: results.data.items }),
     };
@@ -111,8 +101,8 @@ module.exports.getCalendarEvents = async (event) => {
     return {
       statusCode: 500,
       headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
       },
       body: JSON.stringify({ error: error.message }),
     };
