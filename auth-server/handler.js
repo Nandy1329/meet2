@@ -13,7 +13,9 @@ const oAuth2Client = new google.auth.OAuth2(
   redirect_uris[0]
 );
 
-console.log("OAuth2 Client setup:", oAuth2Client);
+console.log("CLIENT_ID:", CLIENT_ID);
+console.log("CLIENT_SECRET:", CLIENT_SECRET);
+console.log("CALENDAR_ID:", CALENDAR_ID);
 
 module.exports.getAuthURL = async () => {
   const authUrl = oAuth2Client.generateAuthUrl({
@@ -32,79 +34,80 @@ module.exports.getAuthURL = async () => {
 };
 
 module.exports.getAccessToken = async (event) => {
-  try {
-    let code = event.pathParameters?.code;
+  const code = decodeURIComponent(`${event.pathParameters.code}`);
 
-    if (!code) {
-      throw new Error("Authorization code is missing.");
-    }
-
-    // Decode only if necessary
-    if (code.includes("%")) {
-      code = decodeURIComponent(code);
-    }
-
-    console.log("Decoded authorization code:", code);
-
-    const { tokens } = await oAuth2Client.getToken(code);
-
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify(tokens),
-    };
-  } catch (error) {
-    console.error("Error in getAccessToken:", error.message);
-    return {
-      statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify({ error: error.message }),
-    };
-  }
+  return new Promise((resolve, reject) => {
+    oAuth2Client.getToken(code, (error, response) => {
+      if (error) {
+        return reject(error);
+      }
+      return resolve(response);
+    });
+  })
+    .then((results) => {
+      return {
+        statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true,
+        },
+        body: JSON.stringify(results),
+      };
+    })
+    .catch((error) => {
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true,
+        },
+        body: JSON.stringify(error),
+      };
+    });
 };
 
-mmodule.exports.getCalendarEvents = async (event) => {
+module.exports.getCalendarEvents = async (event) => {
   try {
-    const authHeader = event.headers?.Authorization || event.headers?.authorization;
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw new Error("Missing or invalid Authorization header");
-    }
-
-    const access_token = authHeader.split(" ")[1];
+    const access_token = decodeURIComponent(`${event.pathParameters.access_token}`);
     oAuth2Client.setCredentials({ access_token });
 
-    const results = await calendar.events.list({
-      calendarId: CALENDAR_ID,
-      auth: oAuth2Client,
-      timeMin: new Date().toISOString(),
-      singleEvents: true,
-      orderBy: "startTime",
+
+    const response = await new Promise((resolve, reject) => {
+      calendar.events.list(
+        {
+          calendarId: CALENDAR_ID,
+          auth: oAuth2Client,
+          timeMin: new Date().toISOString(),
+          singleEvents: true,
+          orderBy: "startTime",
+        },
+        (error, response) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        }
+      );
     });
 
     return {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': true
+        'Access-Control-Allow-Credentials': true,
       },
-      body: JSON.stringify({ events: results.data.items }),
+      body: JSON.stringify({ events: response.data.items }),
     };
   } catch (error) {
-    console.error("Error in getCalendarEvents:", error.message);
+    console.error('Error fetching calendar events:', error);
     return {
       statusCode: 500,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Credentials': true,
       },
-      body: JSON.stringify({ error: error.message }),
+      body: JSON.stringify({ error: error.message, stack: error.stack }),
     };
   }
 };
