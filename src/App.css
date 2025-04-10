@@ -159,6 +159,22 @@ button:hover {
 }
 
 .link-to-calendar {
-  color: var(--text-color);
+  color: var(--background-color);
   text-decoration: none;
 }
+
+.NumberOfEvents {
+  margin-bottom: 20px;
+}
+
+.event-list {
+  margin-top: 20px;
+}
+
+.alerts-container {
+  position: fixed;
+  top: 0px;
+  left: 20px;
+  width: 250px;
+  z-index: 1000;
+ }

@@ -81,7 +81,7 @@
 
             code = encodeURIComponent(code);
 
-            const getTokenRequest = `https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/token/${code}`;
+            const getTokenRequest = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/token";
 
             console.log('Requesting token with code:', code);
 
@@ -106,7 +106,7 @@
         // --------------------- STEP 3
         const getEvents = document.getElementById("getEvents");
         const events = document.getElementById("events");
-        const getCalendarEvents = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-calendar-events/{access_token}";
+        const getCalendarEvents = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-calendar-events";
 
         getEvents.onclick = function () {
             try {
