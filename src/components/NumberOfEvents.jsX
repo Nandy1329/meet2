@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useState } from "react";
 
 const NumberOfEvents = ({ currentNOE, setCurrentNOE, setErrorAlert }) => {
   const [numberOfEvents, setNumberOfEvents] = useState(currentNOE);
@@ -7,20 +8,20 @@ const NumberOfEvents = ({ currentNOE, setCurrentNOE, setErrorAlert }) => {
     const value = event.target.value;
 
     if (isNaN(value) || value < 0) {
-      setErrorAlert('Please enter a valid number.');
+      setErrorAlert("Please enter a valid number.");
       return;
     } else if (value > 32) {
-      setErrorAlert('Please enter a number less than or equal to 32.');
+      setErrorAlert("Please enter a number less than or equal to 32.");
       return;
     } else {
-      setErrorAlert('');
+      setErrorAlert("");
       setCurrentNOE(value);
       setNumberOfEvents(value);
     }
   };
 
   return (
-    <div id="numberOfEvents">
+    <div id="number-of-events">
       <label htmlFor="numberOfEventsInput">Number of Events</label>
       <input
         id="numberOfEventsInput"
@@ -34,4 +35,4 @@ const NumberOfEvents = ({ currentNOE, setCurrentNOE, setErrorAlert }) => {
   );
 };
 
-export default NumberOfEvents;  // src/components/NumberOfEvents.jsx
+export default NumberOfEvents; // src/components/NumberOfEvents.jsx

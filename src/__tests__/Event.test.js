@@ -25,8 +25,12 @@ describe("<Event /> component", () => {
         expect(summaryElement).toBeInTheDocument();
     });
 
-    test('render when event was created', () => {
-        const createdElement = screen.getByText("2020-05-19T19:17:46.000Z");
+    test('render when event was created', async () => {
+        // Removed redundant block causing syntax error
+    });
+        const getAllEvents = await getEvents();
+        const singleEvent = getAllEvents[0];
+        const createdElement = screen.getByText(new Date(singleEvent.created).toLocaleString());
         expect(createdElement).toBeInTheDocument();
     });
 

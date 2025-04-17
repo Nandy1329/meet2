@@ -1,25 +1,122 @@
-import mockData from './mock-data';
+import mockData from "./mock-data";
+import NProgress from "nprogress";
 
+// Format the date to a readable format
+export const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
 
-/**
- *
- * @param {*} events:
- * The following function should be in the “api.js” file.
- * This function takes an events array, then uses map to create a new array with only locations.
- * It will also remove all duplicates by creating another new array using the spread operator and spreading a Set.
- * The Set will remove all duplicates from the array.
- */
+// Extract unique locations from events
 export const extractLocations = (events) => {
-  const extractedLocations = events.map((event) => event.location);
-  const locations = [...new Set(extractedLocations)];
+  const locations = [...new Set(events.map((event) => event.location))];
   return locations;
 };
 
+// Get the access token from localStorage or fetch a new one
+export const getAccessToken = async () => {
+  const accessToken = localStorage.getItem("access_token");
+  const tokenCheck = accessToken && (await checkToken(accessToken));
 
-/**
- *
- * This function will fetch the list of all events
- */
+  if (!accessToken || tokenCheck.error) {
+    localStorage.removeItem("access_token");
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get("code");
+
+    if (!code) {
+      const response = await fetch(
+        "https://mq2upsbmw9.execute-api.us-west-2.amazonaws.com/dev/api/get-auth-url"
+      );
+      const { authUrl } = await response.json();
+      window.location.href = authUrl;
+      return;
+    }
+
+    return code && getToken(code);
+  }
+
+  return accessToken;
+};
+
+// Check if the token is valid
+const checkToken = async (accessToken) => {
+  const response = await fetch(
+    `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`
+  );
+  return await response.json();
+};
+
+// Fetch a new token using the authorization code
+const getToken = async (code) => {
+  try {
+    const encodeCode = encodeURIComponent(code);
+    const response = await fetch(
+      `https://mq2upsbmw9.execute-api.us-west-2.amazonaws.com/dev/api/token/${encodeCode}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const { access_token } = await response.json();
+    if (access_token) {
+      localStorage.setItem("access_token", access_token);
+      return access_token;
+    }
+  } catch (error) {
+    console.error("Error fetching token:", error);
+  }
+};
+
+// Fetch events from the API or local mock data
 export const getEvents = async () => {
-  return mockData;
+  NProgress.start();
+
+  if (window.location.href.startsWith("http://localhost")) {
+    NProgress.done();
+    return mockData;
+  }
+
+  if (!navigator.onLine) {
+    const events = localStorage.getItem("lastEvents");
+    NProgress.done();
+    return events ? JSON.parse(events) : [];
+  }
+
+  const token = await getAccessToken();
+
+  if (token) {
+    removeQuery();
+    const url = `https://mq2upsbmw9.execute-api.us-west-2.amazonaws.com/dev/api/get-calendar-events/${token}`;
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (result && result.events) {
+      localStorage.setItem("lastEvents", JSON.stringify(result.events));
+      NProgress.done();
+      return result.events;
+    }
+  }
+
+  NProgress.done();
+  return [];
+};
+
+// Extract event details
+export const getEventDetails = (events) => {
+  return events.map((event) => ({
+    summary: event.summary,
+    start: event.created,
+    location: event.location,
+    htmlLink: event.htmlLink,
+    description: event.description,
+  }));
+};
+
+// Remove the code parameter from the URL
+const removeQuery = () => {
+  const newUrl = window.location.pathname
+    ? `${window.location.protocol}//${window.location.host}${window.location.pathname}`
+    : `${window.location.protocol}//${window.location.host}`;
+  window.history.pushState("", "", newUrl);
 };

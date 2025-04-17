@@ -1,11 +1,12 @@
 module.exports = {
   testEnvironment: 'jest-environment-jsdom',
   transform: {
-    '^.+\\.jsx?$': 'babel-jest', // Transform JavaScript and JSX files using Babel
+    '^.+\\.[jt]sx?$': 'babel-jest', // Transform JavaScript, JSX, TypeScript, and TSX files using Babel
   },
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy', // Mock CSS imports
   },
-  moduleFileExtensions: ['js', 'jsx'],
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'], // Adjusted the path to point to the correct location
+  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'], // Include TypeScript extensions if applicable
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'], // Ensure this file exists and is correctly configured
+  transformIgnorePatterns: ['/node_modules/(?!.*\\.mjs$)'], // Allow transformation of modern ES modules
 };
