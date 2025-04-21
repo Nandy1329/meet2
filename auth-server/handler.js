@@ -1,28 +1,31 @@
-// eslint-disable-next-line strict
+/* eslint-disable no-undef */
 'use strict';
 
-const { google } = require("googleapis");
-const calendar = google.calendar("v3");
-const SCOPES = ["https://www.googleapis.com/auth/calendar.events.public.readonly"];
-const { CLIENT_SECRET, CLIENT_ID, CALENDAR_ID } = process.env;
-const REDIRECT_URI = "https://meet2-kappa.vercel.app";
+import { google } from 'googleapis';
+const calendar = google.calendar('v3');
+
+// You probably want readonly access to *all* events, rather than only “public” events
+const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
+
+// This must match exactly what you registered in Google Cloud Console:
+const REDIRECT_URI = 'https://meet2-kappa.vercel.app';
 
 const oAuth2Client = new google.auth.OAuth2(
   CLIENT_ID,
   CLIENT_SECRET,
-  redirect_uris[0]
+  REDIRECT_URI
 );
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Credentials': true,
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-module.exports.getAuthURL = async () => {
+export async function getAuthURL() {
   const authUrl = oAuth2Client.generateAuthUrl({
-    access_type: "offline",
+    access_type: 'offline',
     scope: SCOPES,
   });
 
@@ -31,48 +34,50 @@ module.exports.getAuthURL = async () => {
     headers: CORS_HEADERS,
     body: JSON.stringify({ authUrl }),
   };
-};
+}
 
-module.exports.getAccessToken = async (event) => {
-  if (event.httpMethod === "OPTIONS") {
-    return { statusCode: 200, headers: CORS_HEADERS, body: "OK" };
+export async function getAccessToken(event) {
+  // Handle preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers: CORS_HEADERS, body: 'OK' };
   }
 
   const code = decodeURIComponent(event.pathParameters.code);
-  return new Promise((resolve, reject) => {
-    oAuth2Client.getToken(code, (error, response) => {
-      if (error) return reject(error);
-      return resolve(response);
-    });
-  })
-    .then((results) => ({
+  try {
+    // Promisify getToken
+    const { tokens } = await oAuth2Client.getToken(code);
+    // Optionally store tokens.refresh_token somewhere for offline access
+
+    return {
       statusCode: 200,
       headers: CORS_HEADERS,
-      body: JSON.stringify(results),
-    }))
-    .catch((error) => ({
+      body: JSON.stringify(tokens),
+    };
+  } catch (error) {
+    return {
       statusCode: 500,
       headers: CORS_HEADERS,
-      body: JSON.stringify(error),
-    }));
-};
+      body: JSON.stringify({ error: error.toString() }),
+    };
+  }
+}
 
-module.exports.getCalendarEvents = async (event) => {
-  if (event.httpMethod === "OPTIONS") {
-    return { statusCode: 200, headers: CORS_HEADERS, body: "OK" };
+export async function getCalendarEvents(event) {
+  // Handle preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers: CORS_HEADERS, body: 'OK' };
   }
 
   const access_token = decodeURIComponent(event.pathParameters.access_token);
   oAuth2Client.setCredentials({ access_token });
 
   try {
-    // Mock DATA
     const response = await calendar.events.list({
-      calendarId: CALENDAR_ID,
       auth: oAuth2Client,
+      calendarId: CALENDAR_ID,
       timeMin: new Date().toISOString(),
       singleEvents: true,
-      orderBy: "startTime",
+      orderBy: 'startTime',
     });
 
     return {
@@ -84,7 +89,7 @@ module.exports.getCalendarEvents = async (event) => {
     return {
       statusCode: 500,
       headers: CORS_HEADERS,
-      body: JSON.stringify(error),
+      body: JSON.stringify({ error: error.toString() }),
     };
   }
-};
+}

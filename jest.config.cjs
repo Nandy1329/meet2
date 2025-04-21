@@ -8,5 +8,4 @@ module.exports = {
   },
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'], // Include TypeScript extensions if applicable
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'], // Ensure this file exists and is correctly configured
-  transformIgnorePatterns: ['/node_modules/(?!.*\\.mjs$)'], // Allow transformation of modern ES modules
 };

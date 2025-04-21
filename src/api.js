@@ -25,7 +25,7 @@ export const getAccessToken = async () => {
 
     if (!code) {
       const response = await fetch(
-        "https://mq2upsbmw9.execute-api.us-west-2.amazonaws.com/dev/api/get-auth-url"
+        "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-auth-url"
       );
       const { authUrl } = await response.json();
       window.location.href = authUrl;
@@ -51,7 +51,13 @@ const getToken = async (code) => {
   try {
     const encodeCode = encodeURIComponent(code);
     const response = await fetch(
-      `https://mq2upsbmw9.execute-api.us-west-2.amazonaws.com/dev/api/token/${encodeCode}`
+      "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/token/{code}".replace("{code}", encodeCode), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ code: encodeCode }),
+    }
     );
 
     if (!response.ok) {
@@ -87,7 +93,7 @@ export const getEvents = async () => {
 
   if (token) {
     removeQuery();
-    const url = `https://mq2upsbmw9.execute-api.us-west-2.amazonaws.com/dev/api/get-calendar-events/${token}`;
+    const url = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-calendar-events/{access_token}".replace("{access_token}", token); `;
     const response = await fetch(url);
     const result = await response.json();
 
@@ -116,7 +122,7 @@ export const getEventDetails = (events) => {
 // Remove the code parameter from the URL
 const removeQuery = () => {
   const newUrl = window.location.pathname
-    ? `${window.location.protocol}//${window.location.host}${window.location.pathname}`
+    ? `${ window.location.protocol }//${window.location.host}${window.location.pathname}`
     : `${window.location.protocol}//${window.location.host}`;
-  window.history.pushState("", "", newUrl);
+window.history.pushState("", "", newUrl);
 };
