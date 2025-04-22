@@ -93,7 +93,7 @@ export const getEvents = async () => {
 
   if (token) {
     removeQuery();
-    const url = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-calendar-events/{access_token}".replace("{access_token}", token); `;
+    const url = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-calendar-events/{access_token}".replace("{access_token}", token);
     const response = await fetch(url);
     const result = await response.json();
 
@@ -122,7 +122,7 @@ export const getEventDetails = (events) => {
 // Remove the code parameter from the URL
 const removeQuery = () => {
   const newUrl = window.location.pathname
-    ? `${ window.location.protocol }//${window.location.host}${window.location.pathname}`
+    ? `${window.location.protocol}//${window.location.host}${window.location.pathname}`
     : `${window.location.protocol}//${window.location.host}`;
 window.history.pushState("", "", newUrl);
 };

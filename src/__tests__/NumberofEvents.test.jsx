@@ -1,27 +1,60 @@
-// src/__tests__/NumberOfEvents.test.js
-import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, within, screen, waitFor } from '@testing-library/react';
+// eslint-disable-next-line no-unused-vars
+import React from "react";
 import userEvent from '@testing-library/user-event';
-import NumberOfEvents from '../components/NumberOfEvents.jsx';
+import NumberOfEvents from '../components/NumberOfEvents';
+import App from '../App';
 
 describe('<NumberOfEvents /> component', () => {
-    test('renders an input with role "spinbutton"', () => {
-        render(<NumberOfEvents />);
-        const inputElement = screen.getByRole('spinbutton');
-        expect(inputElement).toBeInTheDocument();
-    });
 
-    test('default value of the input is 32', () => {
-        render(<NumberOfEvents />);
-        const inputElement = screen.getByRole('spinbutton');
-        expect(inputElement.value).toBe('32');
-    });
+  let NumberOfEventsComponent;
+  const mockSetCurrentNOE = jest.fn(); // Create a mock function
 
-    test('value changes when user types', async () => {
-        const setCurrentNOE = jest.fn();
-        const user = userEvent.setup();
-        render(<NumberOfEvents setCurrentNOE={setCurrentNOE} />);
-        await user.type(inputElement, '{backspace}{backspace}10');
-        expect(inputElement.value).toBe('10');
-        expect(setCurrentNOE).toHaveBeenCalledWith(10);
+  beforeEach(() => {
+    NumberOfEventsComponent = render(<NumberOfEvents
+      setCurrentNOE={mockSetCurrentNOE}
+      setErrorAlert={() => { }}
+    />);
+  });
+
+  test('renders text input', () => {
+    const NumEventsBox = screen.getByLabelText(/Number of Events:/i);
+    expect(NumEventsBox).toBeInTheDocument();
+    expect(NumEventsBox).toHaveClass('events-num');
+  });
+
+  test('default value of input is 32', () => {
+    const inputBox = NumberOfEventsComponent.queryByRole('textbox');
+    expect(inputBox).toHaveValue(32);
+  });
+
+  test('updates input value when user types', async () => {
+    const user = userEvent.setup();
+    const inputBox = NumberOfEventsComponent.queryByRole('textbox');
+    await user.type(inputBox, '{backspace}{backspace}10');
+    expect(inputBox).toHaveValue(10);
+  });
+});
+
+describe("<NumberOfEvents /> integration", () => {
+  test("user changes the value of number of events", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<App />);
+    
+    // Ensure App is rendered
+    expect(container).toBeInTheDocument();
+
+    // Find the input field
+    const numberOfEventsInput = screen.getByLabelText(/Number of Events:/i);
+    // Change the number of events to 10
+    await user.clear(numberOfEventsInput); // Clears existing value
+    await user.type(numberOfEventsInput, "10"); // Types new value
+
+    // Wait for the event list to update
+    await waitFor(() => {
+      const eventList = container.querySelector("#event-list");
+      const allRenderedEventItems = within(eventList).queryAllByRole("listitem"); // Fix: Use "listitem"
+      expect(allRenderedEventItems.length).toBe(10);
     });
+  });
+});

@@ -1,38 +1,30 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
+import App from "../App";
+import { ErrorAlert } from "./Alert";
 
-const NumberOfEvents = ({ currentNOE, setCurrentNOE, setErrorAlert }) => {
-  const [numberOfEvents, setNumberOfEvents] = useState(currentNOE);
+const NumberOfEvents = ({ setCurrentNOE, setErrorAlert }) => {
+
+  const [number, setNumber] = useState(32);
 
   const handleInputChanged = (event) => {
     const value = event.target.value;
-
-    if (isNaN(value) || value < 0) {
-      setErrorAlert("Please enter a valid number.");
-      return;
-    } else if (value > 32) {
-      setErrorAlert("Please enter a number less than or equal to 32.");
-      return;
-    } else {
-      setErrorAlert("");
-      setCurrentNOE(value);
-      setNumberOfEvents(value);
-    }
-  };
+    setNumber(value);
+    setCurrentNOE(value);
+    setErrorAlert("");
+  }
 
   return (
     <div id="number-of-events">
-      <label htmlFor="numberOfEventsInput">Number of Events</label>
+      <label htmlFor="number-of-events-input">Number of Events: </label>
       <input
-        id="numberOfEventsInput"
         type="text"
-        className="number"
-        placeholder="Enter number of events"
+        id="number-of-events-input"
+        className="number-of-events-input"
+        value={number}
         onChange={handleInputChanged}
-        value={numberOfEvents}
       />
     </div>
   );
-};
+}
 
-export default NumberOfEvents; // src/components/NumberOfEvents.jsx
+export default NumberOfEvents;

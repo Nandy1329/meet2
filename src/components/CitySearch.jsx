@@ -1,5 +1,6 @@
-// src/components/CitySearch.jsx
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -10,42 +11,37 @@ const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
     const value = event.target.value;
     setQuery(value);
 
-    // When the user clears the textbox, empty out suggestions
     if (value === "") {
       setSuggestions([]);
       setInfoAlert("");
       return;
     }
 
-    // Otherwise, filter
     const filtered = allLocations.filter(location =>
       location.toUpperCase().includes(value.toUpperCase())
     );
     setSuggestions(filtered);
 
-    // Show an alert if no matches
     if (filtered.length === 0) {
       setInfoAlert("No locations found.");
     } else {
       setInfoAlert("");
     }
   };
-
   const handleItemClicked = (event) => {
     const value = event.target.textContent;
     setQuery(value);
     setShowSuggestions(false);
     setCurrentCity(value);
-    setInfoAlert("");
+    setInfoAlert("")
   };
 
-  // Whenever the list of locations changes, reset suggestions
   useEffect(() => {
     setSuggestions(allLocations);
   }, [allLocations]);
 
   return (
-    <div id="city-search">
+    <div id="city-search" data-testid="city-search">
       <input
         type="text"
         className="city"
@@ -53,6 +49,7 @@ const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
         value={query}
         onFocus={() => setShowSuggestions(true)}
         onChange={handleInputChanged}
+        role="textbox" // Add role for testing
       />
       {showSuggestions && (
         <ul className="suggestions">
@@ -61,7 +58,6 @@ const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
               {s}
             </li>
           ))}
-          {/* “See all cities” also clickable */}
           <li key="See all cities" onClick={handleItemClicked}>
             <b>See all cities</b>
           </li>
@@ -69,6 +65,12 @@ const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
       )}
     </div>
   );
+};
+
+CitySearch.propTypes = {
+  allLocations: PropTypes.array.isRequired,
+  setCurrentCity: PropTypes.func.isRequired,
+  setInfoAlert: PropTypes.func.isRequired,
 };
 
 export default CitySearch;
