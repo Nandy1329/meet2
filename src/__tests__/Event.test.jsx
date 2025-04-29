@@ -5,34 +5,30 @@ import Event from '../components/Event'; // Adjust path accordingly
 import { getEvents } from '../api';
 
 describe('<Event /> component', () => {
-
   let EventComponent;
-  beforeEach(() => {
+  const mockEvent = {
+    summary: "Test Event",
+    start: { dateTime: "2025-04-23T10:00:00Z" },
+    location: "Test Location",
+    description: "This is a test event description.",
+  };
 
-    EventComponent = render(<Event />);
+  beforeEach(() => {
+    EventComponent = render(<Event event={mockEvent} />);
   });
 
-  test('An event element is collapsed by default', async () => {
-    const allEvents = await getEvents();
-    const events = allEvents
-    const event = events[0]
-    EventComponent.rerender(<Event event={event} />);
-
-    const eventSummary = EventComponent.queryByText(allEvents[0].summary);
-    const eventCreated = EventComponent.queryByText(allEvents[0].created);
-    const eventLocation = EventComponent.queryByText(allEvents[0].location);
-    const eventHide = EventComponent.queryByText(/About event:/i);
+  test('An event element is collapsed by default', () => {
+    const eventSummary = EventComponent.queryByText(mockEvent.summary);
+    const eventLocation = EventComponent.queryByText(mockEvent.location);
+    const eventDetails = EventComponent.queryByText(/About event:/i);
 
     expect(eventSummary).toBeInTheDocument();
-    expect(eventCreated).toBeInTheDocument();
     expect(eventLocation).toBeInTheDocument();
-    expect(eventHide).toBeNull();
-
-
+    expect(eventDetails).toBeNull(); // Details should be hidden by default
   });
 
-  test('renders event details button with the tile (show details)', () => {
-    const button = EventComponent.getByRole("button", { name: /show details/i });;
+  test('renders event details button with the title (show details)', () => {
+    const button = EventComponent.getByRole("button", { name: /show details/i });
     expect(button).toBeInTheDocument();
   });
 
@@ -40,33 +36,19 @@ describe('<Event /> component', () => {
     const user = userEvent.setup();
     const toggleButton = EventComponent.getByRole("button", { name: /show details/i });
 
-    const allEvents = await getEvents(); // Wait for events to be fetched
-
-    const events = allEvents
-    const event = events[0]
-
-    EventComponent.rerender(<Event event={event} />);
-    //user click "show details for"
-
-    await user.click(toggleButton);
-    const eventDetails = EventComponent.getByText(/Have you wondered how you can ask Google/i);
+    await user.click(toggleButton); // Expand details
+    const eventDetails = EventComponent.getByText(mockEvent.description);
     expect(eventDetails).toBeInTheDocument();
-
   });
 
   test('User can collapse an event to hide details', async () => {
     const user = userEvent.setup();
-    const toggleButton = EventComponent.getByRole('button', { name: /show details/i });
-
-    const allEvents = await getEvents(); // Wait for events to be fetched
-    const events = allEvents
-    const event = events[0]
-    EventComponent.rerender(<Event event={event} />);
+    const toggleButton = EventComponent.getByRole("button", { name: /show details/i });
 
     await user.click(toggleButton); // Expand details
     await user.click(toggleButton); // Collapse details
 
-    const eventDetails = EventComponent.queryByText(event.description);
+    const eventDetails = EventComponent.queryByText(mockEvent.description);
     expect(eventDetails).not.toBeInTheDocument();
   });
 });

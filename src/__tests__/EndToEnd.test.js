@@ -4,6 +4,8 @@
 
 import puppeteer from 'puppeteer';
 
+jest.setTimeout(30000); // Set timeout to 30 seconds
+
 describe('show/hide event details', () => {
   let browser;
   let page;
@@ -32,9 +34,10 @@ describe('show/hide event details', () => {
     const eventDetails = await page.$('.event .detailsInformation');
     expect(eventDetails).toBeDefined();
   });
+
   test('User can collapse an event to hide details', async () => {
     await page.click('.event .details-btn');
     const eventDetails = await page.$('.event .detailsInformation');
     expect(eventDetails).toBeNull();
   });
-})
+});

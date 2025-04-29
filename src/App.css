@@ -1,37 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Karla:wght@400;700&display=swap');
-
-:root {
-  --color1: #556b2f; /* Olive Drab */
-  --color2: #8b4513; /* Sienna */
-  --color3: #d2b48c; /* Tan */
-  --border-color: #6b8e23; /* Olive Green */
-  --border-color-dark: #2e3d16; /* Dark Olive */
-  --background-color: #f5f5dc; /* Beige */
-  --title-color: #3e2723; /* Dark Sienna */
-  --text-color: #3b3b3b; /* Dark Gray */
-}
-
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background: linear-gradient(to bottom, var(--color1), var(--color3));
-  min-height: 100vh;
-  background-attachment: fixed;
-}
-
+@import url(https://fonts.googleapis.com/css?family=Roboto:500);
 .App {
   text-align: center;
   padding: 2% 5%;
 }
+#root {
+  width: 100%;
+}
 
 .App * {
   box-sizing: border-box;
-  margin: auto;
-  font-family: "Roboto", sans-serif;
+  text-align: center;
+  align-items: center;
+  width: 75%;
 }
 
 ul {
@@ -45,25 +25,23 @@ p {
 
 input[type="text"],
 input[type="number"] {
-  padding: 10px 8px;
+  padding: 8px 6px 8px 10px;
   border-radius: 4px;
   outline: none;
-  border: 1px solid var(--border-color);
-  background-color: var(--background-color);
-  font-size: 16px;
-  line-height: 22px;
-  height: 40px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  line-height: 20px;
+  align-self: center;
+  height: 38px;
   margin-bottom: 20px;
 }
 
-.input-field {
-  width: 300px;
-  margin-top: 5px;
-}
+/* City Search Component */
 
-.label-number-field {
-  font-style: italic;
-  color: var(--text-color);
+.city {
+  width: 250px;
+  text-align: center;
+  align-items: center;
 }
 
 #city-search {
@@ -71,104 +49,39 @@ input[type="number"] {
   flex-direction: column;
   margin: auto;
   position: relative;
+  
 }
 
 .suggestions {
-  width: 300px;
+  display: flex;
+  flex-direction: column;
   position: absolute;
+  color: black;
   top: 45px;
   z-index: 2;
-  font-size: 16px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  margin: 0;
+  font-size: 14px;
+  width: 250px; /* Ensure width is defined */
+  align-items: center; /* Centers list items horizontally */
+  justify-content: center; /* Ensures vertical center alignment if necessary */
 }
 
 .suggestions > li {
   text-align: left;
-  padding: 10px;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  padding: 8px 6px 8px 10px;
+  background-color: #eee;
   cursor: pointer;
+  width: 100%; /* This ensures that li elements take the full width of the container */
+}
+
+
+.suggestions > li:last-child {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 
 .suggestions > li:hover {
-  background-color: var(--color2);
-  color: #f5f5dc;
-}
-
-.error-alert {
-  font-style: italic;
-  font-weight: 600;
-  color: #a52a2a; /* Brick Red for errors */
-  margin-bottom: 5px;
-}
-
-h2 {
-  font-weight: 700;
-  font-size: 32px;
-  color: var(--title-color);
-  text-transform: uppercase;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.event {
-  border: 2px solid var(--border-color-dark);
-  background-color: rgba(245, 245, 220, 0.9); /* Semi-transparent Beige */
-  color: var(--text-color);
-  padding: 25px;
-  margin-bottom: 15px;
-  text-align: center;
-  border-radius: 4px;
-  width: 75%;
-}
-
-.event-details {
-  margin-top: 20px;
-}
-
-button {
-  padding: 8px 12px;
-  border-radius: 4px;
-  border: 2px solid var(--border-color-dark);
-  font-size: 16px;
-  font-weight: 600;
-  font-style: normal;
-  background-color: var(--color3);
-  color: #3e2723; /* Dark Sienna */
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-button:hover {
-  background-color: var(--color2);
-  color: #f5f5dc;
-}
-
-.show-details-btn {
-  width: 160px;
-  background-color: var(--color1);
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.btn-to-calendar {
-  width: 200px;
-  background-color: var(--color2);
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-
-.link-to-calendar {
-  color: var(--background-color);
-  text-decoration: none;
-}
-
-.NumberOfEvents {
-  margin-bottom: 20px;
-}
-
-.event-list {
-  margin-top: 20px;
+  background-color: #bcdcdb;
 }
 
 .alerts-container {
@@ -178,3 +91,159 @@ button:hover {
   width: 250px;
   z-index: 1000;
  }
+
+/* Number of Events Component */
+
+#number-of-events {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  position: relative;
+  width: 250px; /* Adjust width as necessary */
+}
+
+#number-of-events label {
+  font-size: 16px;
+  margin-bottom: 8px; /* Space between label and input */
+}
+
+.events-num {
+  padding: 8px 10px;
+  border-radius: 4px;
+  outline: none;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  line-height: 20px;
+  width: 100%; /* Makes input fill the container */
+  margin-bottom: 20px; /* Adds space below the input */
+}
+
+.events-num:focus {
+  border-color: #3b8bfc; /* Optional: Add focus effect */
+}
+
+/*  */
+
+/* Charts Component */
+
+.charts-container {
+  width: 99%;
+  height: 400;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 768px) {
+  .charts-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*  */
+
+/* Event-List Component */
+
+#event-list {
+  list-style: none; /* Removes default list styling */
+  padding: 0; /* Removes default padding */
+  margin: 0; /* Removes default margin */
+  display: flex; /* Makes the container a flexbox */
+  flex-direction: column; /* Stack events vertically */
+  gap: 10px; /* Space between each event */
+  max-width: 800px; /* Optional: Adjust max width */
+  margin: 20px auto; /* Centers the list horizontally */
+}
+
+#event-list .event {
+  padding: 15px;
+  background-color: #050000;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+#event-list .event:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a hover effect */
+}
+
+#event-list .event p {
+  margin: 5px 0; /* Space out event details */
+  color: #333;
+}
+
+.event {
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers all child elements horizontally */
+  text-align: center; /* Ensures text inside is centered */
+}
+
+.event:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.eventTitle {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 5px;
+}
+
+.eventCreated, .eventLocation {
+  font-size: 14px;
+  color: #b1b1b1;
+  margin-bottom: 5px;
+}
+
+button {
+  padding: 8px 12px;
+  background-color: #3b8bfc;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+button:hover {
+  background-color: #2b73d3;
+}
+
+.detailsInformation {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers all child elements horizontally */
+  text-align: center; /* Ensures text inside is centered */
+}
+
+.detailsInformation div {
+  margin-bottom: 8px;
+}
+
+.detailsInformation .eventDescription {
+  font-size: 13px;
+  color: #b4b4b4;
+  margin-top: 10px;
+}
+
+.detailsInformation a {
+  color: #3b8bfc;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.detailsInformation a:hover {
+  text-decoration: underline;
+}

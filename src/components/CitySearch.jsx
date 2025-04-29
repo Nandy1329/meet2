@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+
 
 const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -9,39 +8,39 @@ const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
 
   const handleInputChanged = (event) => {
     const value = event.target.value;
+    const filteredLocations = allLocations ? allLocations.filter((location) => {
+      return location.toUpperCase().indexOf(value.toUpperCase()) > -1;
+    }) : [];
+
+
     setQuery(value);
+    setSuggestions(filteredLocations);
 
-    if (value === "") {
-      setSuggestions([]);
-      setInfoAlert("");
-      return;
-    }
 
-    const filtered = allLocations.filter(location =>
-      location.toUpperCase().includes(value.toUpperCase())
-    );
-    setSuggestions(filtered);
-
-    if (filtered.length === 0) {
-      setInfoAlert("No locations found.");
+    let infoText;
+    if (filteredLocations.length === 0) {
+      infoText = "We can not find the city you are looking for. Please try another city"
     } else {
-      setInfoAlert("");
+      infoText = ""
     }
+    setInfoAlert(infoText);
   };
+
   const handleItemClicked = (event) => {
     const value = event.target.textContent;
     setQuery(value);
-    setShowSuggestions(false);
+    setShowSuggestions(false); // to hide the list
     setCurrentCity(value);
     setInfoAlert("")
   };
 
+
   useEffect(() => {
     setSuggestions(allLocations);
-  }, [allLocations]);
+  }, [`${allLocations}`]);
 
   return (
-    <div id="city-search" data-testid="city-search">
+    <div id="city-search">
       <input
         type="text"
         className="city"
@@ -49,28 +48,24 @@ const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
         value={query}
         onFocus={() => setShowSuggestions(true)}
         onChange={handleInputChanged}
-        role="textbox" // Add role for testing
       />
-      {showSuggestions && (
-        <ul className="suggestions">
-          {suggestions.map(s => (
-            <li key={s} onClick={handleItemClicked}>
-              {s}
-            </li>
-          ))}
-          <li key="See all cities" onClick={handleItemClicked}>
-            <b>See all cities</b>
-          </li>
-        </ul>
-      )}
+      {showSuggestions ? <ul className="suggestions">
+        {suggestions.map((suggestion) => {
+          return <li
+            key={suggestion}
+            onClick={handleItemClicked}
+          >{suggestion}</li>
+        })}
+        <li key='See all cities'
+          onClick={handleItemClicked}>
+          <b>See all cities</b>
+        </li>
+      </ul>
+        : null}
     </div>
-  );
-};
+  )
 
-CitySearch.propTypes = {
-  allLocations: PropTypes.array.isRequired,
-  setCurrentCity: PropTypes.func.isRequired,
-  setInfoAlert: PropTypes.func.isRequired,
-};
+}
+
 
 export default CitySearch;
