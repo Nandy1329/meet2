@@ -1,65 +1,63 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from "react";
 
+import {
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-class Alert extends Component {
-  constructor(props) {
-    super(props);
-    this.color = null;
-    this.bgColor = null;
-  }
+const CityEventsChart = ({ allLocations, events }) => {
+  const [data, setData] = useState([]);
 
+  useEffect(() => {
+    setData(getData());
+  }, [`${events}`]);
 
-  getStyle = () => {
-    return {
-      color: this.color,
-      backgroundColor: this.bgColor,
-      borderWidth: "2px",
-      borderStyle: "solid",
-      fontWeight: "bolder",
-      borderRadius: "7px",
-      borderColor: this.color,
-      textAlign: "center",
-      fontSize: "12px",
-      margin: "10px 0",
-      padding: "10px"
-    };
-  }
+  const getData = () => {
+    const data = allLocations.map((location) => {
+      const count = events.filter(
+        (event) => event.location === location
+      ).length;
+      const city = location.split(/, | - /)[0];
+      return { city, count };
+    });
+    return data;
+  };
 
+  return (
+    <ResponsiveContainer width="99%" height={400}>
+      <ScatterChart
+        margin={{
+          top: 20,
+          right: 20,
+          bottom: 60,
+          left: -30,
+        }}
+      >
+        <CartesianGrid />
+        <XAxis
+          type="category"
+          dataKey="city"
+          name="City"
+          angle={60}
+          interval={0}
+          tick={{ dx: 20, dy: 40, fontSize: 14 }}
+        />
+        <YAxis
+          type="number"
+          dataKey="count"
+          name="Number of Events"
+          allowDecimals={false}
+        />
+        <Tooltip cursor={{ strokeDasharray: "3 3" }} />
+        <Scatter name="A school" data={data} fill="#8884d8" />
+      </ScatterChart>
+    </ResponsiveContainer>
+  );
+};
 
-  render() {
-    return (
-      <div className="Alert">
-        <p style={this.getStyle()}>{this.props.text}</p>
-      </div>
-    );
-  }
-}
-
-class InfoAlert extends Alert {
-  constructor(props) {
-    super(props);
-    this.color = 'rgb(0, 0, 255)'; // blue
-    this.bgColor = 'rgb(220, 220, 255)'; // light blue
-  }
-}
-
-
-class ErrorAlert extends Alert {
-  constructor(props) {
-    super(props);
-    this.color = 'red';
-    this.bgColor = 'rgb(255, 200, 200)';
-  }
-}
-
-class WarningAlert extends Alert {
-  constructor(props) {
-    super(props);
-    this.color = 'yellow';
-    this.bgColor = 'rgb(184, 195, 106)';
-  }
-}
-
-export { InfoAlert, ErrorAlert, WarningAlert };
-
-
+export default CityEventsChart;

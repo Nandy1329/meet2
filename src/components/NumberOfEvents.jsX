@@ -1,37 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 const NumberOfEvents = ({ setCurrentNOE, setErrorAlert }) => {
-  const [eventNumber, setEventNumber] = useState(32);
+  const [inputValue, setInputValue] = useState(32);
 
-  const handleInputChange = (event) => {
-    const value = Number(event.target.value); // Convert input to number
-    setEventNumber(value);
-
-    let infoText;
-    if (value < 1) {
-      infoText = "The number of events needs to be higher than 0";
-    } else if (isNaN(event.target.value)) {
-      infoText = "The input needs to be a number";
+  const handleInputChanged = (event) => {
+    const value = parseInt(event.target.value, 10);
+    setInputValue(value);
+    if (value < 1 || isNaN(value)) {
+      setErrorAlert("Please enter a valid number (1 or more).");
     } else {
-      infoText = "";
+      setErrorAlert("");
       setCurrentNOE(value);
     }
-    setErrorAlert(infoText);
   };
 
   return (
-    <div id="number-of-events">
-      <label htmlFor="events-num">Number of Events:</label>
+    <div>
+      <label htmlFor="number-of-events">Number of Events:</label>
       <input
+        id="number-of-events"
         type="number"
-        id="events-num"  // 👈 Make sure this matches htmlFor in <label>
-        className="events-num"
-        role="textbox"
-        value={eventNumber}
-        onChange={handleInputChange}
+        value={inputValue}
+        onChange={handleInputChanged}
       />
     </div>
   );
+};
+
+NumberOfEvents.propTypes = {
+  setCurrentNOE: PropTypes.func.isRequired,
+  setErrorAlert: PropTypes.func.isRequired,
 };
 
 export default NumberOfEvents;

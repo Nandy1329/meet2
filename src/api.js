@@ -5,7 +5,7 @@ import NProgress from "nprogress";
  * Format the date to a readable format
  */
 export const formatDate = (dateString) => {
-  const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+  const options = { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" };
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
@@ -24,27 +24,28 @@ const getToken = async (code) => {
   try {
     const encodeCode = encodeURIComponent(code);
     const response = await fetch(
-      'https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-calendar-events/{access_token}'); {
-      method: "POST",
+      "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/token/code",
+      {
+        method: "POST",
         headers: {
-        "Content-Type": "application/json",
+          "Content-Type": "application/json",
         },
-      body: JSON.stringify({ code: encodeCode }),
+        body: JSON.stringify({ code: encodeCode }),
       }
     );
 
-if (!response.ok) {
-  throw new Error(`HTTP error! status: ${response.status}`);
-}
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-const { access_token } = await response.json();
-if (access_token) {
-  localStorage.setItem("access_token", access_token);
-  return access_token;
-}
+    const { access_token } = await response.json();
+    if (access_token) {
+      localStorage.setItem("access_token", access_token);
+      return access_token;
+    }
   } catch (error) {
-  console.error("Error fetching token:", error);
-}
+    console.error("Error fetching token:", error);
+  }
 };
 
 /**
@@ -100,6 +101,7 @@ const removeQuery = () => {
 export const getEvents = async () => {
   NProgress.start();
 
+  // Development or offline fallback
   if (window.location.href.startsWith("http://localhost")) {
     NProgress.done();
     return mockData;

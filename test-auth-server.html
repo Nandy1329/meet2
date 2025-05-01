@@ -29,7 +29,7 @@
         <a id="authURL" href="#" target="_blank">Click to authorize</a>
 
         <h4><b>Step 2:</b> Get your code and exchange for an access token</h4>
-        <p>After you’re redirected back to your Meet app on GitHub, copy the code from the URL.</p>
+        <p>After you’re redirected back to your Meet app, copy the code from the URL.</p>
         <label>
             Code input
             <input id="code" type="text" value="" />
@@ -43,26 +43,24 @@
     </main>
 
     <script type="text/javascript">
+        const redirectUri = "https://meet2-kappa.vercel.app/";
+
+        // --------------------- STEP 1: Get OAuth URL
         const getAuthUrlButton = document.getElementById("getAuthUrlButton");
         const resultElement = document.getElementById("result");
         const resultLink = document.getElementById("authURL");
 
-        const getAuthURL = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-auth-url";
+        const getAuthURL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=${encodeURIComponent(
+            redirectUri
+        )}&response_type=code&scope=https://www.googleapis.com/auth/calendar.readonly`;
 
         getAuthUrlButton.onclick = function () {
-            fetch(getAuthURL)
-                .then(response => response.json())
-                .then(json => {
-                    const { authUrl } = json;
-                    resultElement.innerHTML = "OAuth URL retrieved successfully!<br>";
-                    resultLink.href = authUrl;
-                    resultLink.innerText = authUrl;
-                })
-                .catch(error => {
-                    resultElement.innerText = "Error fetching OAuth URL: " + error;
-                });
+            resultElement.innerHTML = "OAuth URL retrieved successfully!<br>";
+            resultLink.href = getAuthURL;
+            resultLink.innerText = getAuthURL;
         };
 
+        // --------------------- STEP 2: Exchange Code for Access Token
         const codeValue = document.getElementById("code");
         const getAccessToken = document.getElementById("getToken");
         const accessTokenElement = document.getElementById("accessToken");
@@ -73,27 +71,43 @@
                 accessTokenElement.innerText = "Error: Code is required!";
                 return;
             }
-            code = encodeURIComponent(code);
-            const getTokenURL = `https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/token/${code}`;
 
-            fetch(getTokenURL)
-                .then(response => response.json())
-                .then(json => {
+            const getTokenURL = "https://oauth2.googleapis.com/token";
+            const body = {
+                code: code,
+                client_id: "519296896290-r06ht8dv9df2o3l3sbvcmrbbqoqc7ojt.apps.googleusercontent.com",
+                client_secret: "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",
+                redirect_uri: redirectUri,
+                grant_type: "authorization_code",
+            };
+
+            console.log("Authorization Code:", code);
+            console.log("Redirect URI:", redirectUri);
+            console.log("Token Request Body:", body);
+
+            fetch(getTokenURL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            })
+                .then((response) => response.json())
+                .then((json) => {
                     console.log("Token JSON response:", json);
                     if (json && json.access_token) {
-                        accessTokenElement.innerText = JSON.stringify(json);
+                        accessTokenElement.innerText = JSON.stringify(json, null, 2);
                     } else {
                         accessTokenElement.innerText = "Error: Token not found in response.";
                     }
                 })
-                .catch(error => {
+                .catch((error) => {
                     accessTokenElement.innerText = "Error fetching access token: " + error;
                 });
         };
 
+        // --------------------- STEP 3: Get Calendar Events
         const getEventsButton = document.getElementById("getEvents");
         const eventsElement = document.getElementById("events");
-        const getCalendarEventsURL = "https://ck8f5q1a3d.execute-api.us-west-2.amazonaws.com/dev/api/get-calendar-events";
+        const getCalendarEventsURL = "https://www.googleapis.com/calendar/v3/calendars/primary/events";
 
         getEventsButton.onclick = function () {
             try {
@@ -105,13 +119,14 @@
                     return;
                 }
 
-                const eventRequest = `${getCalendarEventsURL}/${access_token}`;
-                fetch(eventRequest)
-                    .then(response => response.json())
-                    .then(json => {
+                fetch(getCalendarEventsURL, {
+                    headers: { Authorization: `Bearer ${access_token}` },
+                })
+                    .then((response) => response.json())
+                    .then((json) => {
                         eventsElement.innerText = JSON.stringify(json, null, 2);
                     })
-                    .catch(error => {
+                    .catch((error) => {
                         eventsElement.innerText = "Error fetching events: " + error;
                     });
             } catch (e) {
