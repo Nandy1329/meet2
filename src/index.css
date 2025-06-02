@@ -1,68 +1,249 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url(https://fonts.googleapis.com/css?family=Roboto:500);
+.App {
+  text-align: center;
+  padding: 2% 5%;
+}
+#root {
+  width: 100%;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+.App * {
+  box-sizing: border-box;
+  text-align: center;
+  align-items: center;
+  width: 75%;
 }
 
-body {
-  margin: 0;
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+p {
+  margin: 5px 0;
+}
+
+input[type="text"],
+input[type="number"] {
+  padding: 8px 6px 8px 10px;
+  border-radius: 4px;
+  outline: none;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  line-height: 20px;
+  align-self: center;
+  height: 38px;
+  margin-bottom: 20px;
+}
+
+/* City Search Component */
+
+.city {
+  width: 250px;
+  text-align: center;
+  align-items: center;
+}
+
+#city-search {
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  flex-direction: column;
+  margin: auto;
+  position: relative;
+  
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  color: black;
+  top: 45px;
+  z-index: 2;
+  margin: 0;
+  font-size: 14px;
+  width: 250px; /* Ensure width is defined */
+  align-items: center; /* Centers list items horizontally */
+  justify-content: center; /* Ensures vertical center alignment if necessary */
+}
+
+.suggestions > li {
+  text-align: left;
+  padding: 8px 6px 8px 10px;
+  background-color: #eee;
+  cursor: pointer;
+  width: 100%; /* This ensures that li elements take the full width of the container */
+}
+
+
+.suggestions > li:last-child {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.suggestions > li:hover {
+  background-color: #bcdcdb;
+}
+
+.alerts-container {
+  position: fixed;
+  top: 0px;
+  left: 20px;
+  width: 250px;
+  z-index: 1000;
+ }
+
+/* Number of Events Component */
+
+#number-of-events {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  position: relative;
+  width: 250px; /* Adjust width as necessary */
+}
+
+#number-of-events label {
+  font-size: 16px;
+  margin-bottom: 8px; /* Space between label and input */
+}
+
+.events-num {
+  padding: 8px 10px;
+  border-radius: 4px;
+  outline: none;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  line-height: 20px;
+  width: 100%; /* Makes input fill the container */
+  margin-bottom: 20px; /* Adds space below the input */
+}
+
+.events-num:focus {
+  border-color: #3b8bfc; /* Optional: Add focus effect */
+}
+
+/*  */
+
+/* Charts Component */
+
+.charts-container {
+  width: 99%;
+  height: 400;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 768px) {
+  .charts-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*  */
+
+/* Event-List Component */
+
+#event-list {
+  list-style: none; /* Removes default list styling */
+  padding: 0; /* Removes default padding */
+  margin: 0; /* Removes default margin */
+  display: flex; /* Makes the container a flexbox */
+  flex-direction: column; /* Stack events vertically */
+  gap: 10px; /* Space between each event */
+  max-width: 800px; /* Optional: Adjust max width */
+  margin: 20px auto; /* Centers the list horizontally */
+}
+
+#event-list .event {
+  padding: 15px;
+  background-color: #050000;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+#event-list .event:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a hover effect */
+}
+
+#event-list .event p {
+  margin: 5px 0; /* Space out event details */
+  color: #333;
+}
+
+.event {
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers all child elements horizontally */
+  text-align: center; /* Ensures text inside is centered */
+}
+
+.event:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.eventTitle {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 5px;
+}
+
+.eventCreated, .eventLocation {
+  font-size: 14px;
+  color: #b1b1b1;
+  margin-bottom: 5px;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  padding: 8px 12px;
+  background-color: #3b8bfc;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  font-size: 14px;
+  margin-bottom: 10px;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+button:hover {
+  background-color: #2b73d3;
+}
+
+.detailsInformation {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers all child elements horizontally */
+  text-align: center; /* Ensures text inside is centered */
+}
+
+.detailsInformation div {
+  margin-bottom: 8px;
+}
+
+.detailsInformation .eventDescription {
+  font-size: 13px;
+  color: #b4b4b4;
+  margin-top: 10px;
+}
+
+.detailsInformation a {
+  color: #3b8bfc;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.detailsInformation a:hover {
+  text-decoration: underline;
 }

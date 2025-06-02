@@ -2,7 +2,9 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import CitySearch from '../components/CitySearch';
 import App from '../App';
-import { extractLocations, getEvents } from '../api';
+import { extractLocations } from '../api';
+jest.mock('../api');
+import { getEvents } from '../api';
 import { render, within, waitFor } from '@testing-library/react';
 
 describe('<CitySearch /> component', () => {
@@ -102,7 +104,12 @@ describe('<CitySearch /> component', () => {
 });
 
 describe('<CitySearch /> integration', () => {
-  test('renders suggestions list when the app is rendered.', async () => {
+    // Mock getEvents to return test data
+        getEvents.mockResolvedValue([
+          { location: "Berlin, Germany" },
+          { location: "London, UK" },
+        ]);
+        const AppComponent = render(<App />);
     const user = userEvent.setup();
     const AppComponent = render(<App />);
     const AppDOM = AppComponent.container.firstChild;

@@ -32,30 +32,31 @@ module.exports.getAuthURL = async () => {
     body: JSON.stringify({ authUrl }),
   };
 };
-
 module.exports.getAccessToken = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 200, headers: CORS_HEADERS, body: "OK" };
   }
 
-  const code = decodeURIComponent(event.pathParameters.code);
-  return new Promise((resolve, reject) => {
-    oAuth2Client.getToken(code, (error, response) => {
-      if (error) return reject(error);
-      return resolve(response);
-    });
-  })
-    .then((results) => ({
+  try {
+    const { code } = JSON.parse(event.body); // 👈 Get code from body
+
+    const { tokens } = await oAuth2Client.getToken(code); // 👈 Exchange code for tokens
+
+    return {
       statusCode: 200,
       headers: CORS_HEADERS,
-      body: JSON.stringify(results),
-    }))
-    .catch((error) => ({
+      body: JSON.stringify(tokens),
+    };
+  } catch (error) {
+    console.error("Error getting access token:", error);
+    return {
       statusCode: 500,
       headers: CORS_HEADERS,
-      body: JSON.stringify(error),
-    }));
+      body: JSON.stringify({ message: "Failed to get access token", error: error.message }),
+    };
+  }
 };
+
 
 module.exports.getCalendarEvents = async (event) => {
   if (event.httpMethod === "OPTIONS") {
